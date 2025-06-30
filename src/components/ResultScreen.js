@@ -66,6 +66,35 @@ const ResultScreen = ({ quizData, onRestart }) => {
   ];
 
   useEffect(() => {
+    // Handle scroll indicators for tabs
+    const handleTabScroll = (e) => {
+      const container = e.target;
+      const scrollLeft = container.scrollLeft;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      
+      // Remove all scroll classes
+      container.classList.remove('scrolled-left', 'scrolled-right', 'scrolled-middle');
+      
+      if (scrollLeft <= 5) {
+        // At the beginning
+        container.classList.add('scrolled-left');
+      } else if (scrollLeft >= maxScroll - 5) {
+        // At the end
+        container.classList.add('scrolled-right');
+      } else {
+        // In the middle
+        container.classList.add('scrolled-middle');
+      }
+    };
+
+    // Add scroll event listener to tabs
+    const tabsHeader = document.querySelector('.tabs-header');
+    if (tabsHeader) {
+      tabsHeader.addEventListener('scroll', handleTabScroll);
+      // Trigger initial check
+      handleTabScroll({ target: tabsHeader });
+    }
+
     // Loading messages rotation
     const messages = [
       'Analyserar dina svar...',
@@ -156,6 +185,12 @@ const ResultScreen = ({ quizData, onRestart }) => {
     return () => {
       clearInterval(progressInterval);
       clearInterval(tipInterval);
+      
+      // Cleanup scroll event listener
+      const tabsHeader = document.querySelector('.tabs-header');
+      if (tabsHeader) {
+        tabsHeader.removeEventListener('scroll', handleTabScroll);
+      }
     };
   }, [quizData, tips.length]);
 
