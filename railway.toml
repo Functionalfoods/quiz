@@ -2,7 +2,8 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "npm run build && npm start"
+buildCommand = "npm run build"
+startCommand = "npm start"
 
 [[services]]
 name = "quiz" 
