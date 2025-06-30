@@ -71,31 +71,31 @@ app.post('/api/generate-recommendations', async (req, res) => {
     const prompt = `
 Du är Ulrika Davidsson, grundare av Functional Foods Sweden och expert på functional foods och hälsa. 
 
-Baserat på följande quizresultat, ge MYCKET DETALJERADE och LÅNGA personliga rekommendationer. Varje sektion ska innehålla MINST 8-10 meningar med konkreta råd, specifika exempel och djupgående förklaringar.
+KRITISKT: Du MÅSTE skriva LÅNGA, DETALJERADE svar. Varje sektion ska vara MINST 150-200 ord (cirka 8-10 meningar). KORTA SVAR ÄR INTE ACCEPTABLA.
 
 QUIZRESULTAT:
 ${Object.entries(quizData).map(([key, value]) => `${key}: ${value}`).join('\n')}
 
-Svara med en JSON-struktur i EXAKT detta format:
+Svara med JSON i EXAKT detta format. VARJE sektion MÅSTE vara LÅNG och DETALJERAD:
 
 {
-  "kostrad": "<h3>Kostråd</h3><p>Skriv MINST 8-10 meningar här. Inkludera specifika livsmedel, måltidsförslag för frukost/lunch/middag, mellanmål, portionsstorlekar, näringsämnen att fokusera på, livsmedel att undvika, tips för matlagning, och hur kosten kan optimera energi och hälsa baserat på personens svar.</p>",
-  "livsstil": "<h3>Livsstil</h3><p>Skriv MINST 8-10 meningar här. Ge detaljerade råd om sömnrutiner, specifika tider, kvällsrutiner, morgonrutiner, träningsschema, stresshanteringstekniker, andningsövningar, meditation, naturexponering, sociala aktiviteter, och work-life balance baserat på deras behov.</p>",
-  "functionalFoods": "<h3>Functional Foods</h3><p>Skriv MINST 8-10 meningar här. Lista specifika tillskott med exakta doseringar, när de ska tas, vilka märken som rekommenderas, synergier mellan olika tillskott, förklaringar av hur varje tillskott fungerar i kroppen, potentiella biverkningar, och hur länge de bör användas.</p>",
-  "prioriteringar": "<h3>Prioriteringar</h3><p>Skriv MINST 8-10 meningar här. Skapa en detaljerad steg-för-steg plan uppdelad på veckor och månader. Förklara varför varje steg är viktigt, vad personen kan förvänta sig för resultat, hur de mäter framsteg, vanliga fallgropar att undvika, och hur de bygger hållbara vanor.</p>",
-  "dinKurs": "<h3>Din Kurs</h3><p>Skriv MINST 8-10 meningar här. Beskriv vilken specifik kurs från functionalfoods.se som passar bäst, vad kursen innehåller i detalj, vilka moduler som är mest relevanta, vad de kommer lära sig, hur kursen kan hjälpa med deras specifika utmaningar, praktiska övningar från kursen, och långsiktiga fördelar.</p>"
+  "kostrad": "<h3>Kostråd</h3><p>[SKRIV MINST 150 ORD HÄR - Inkludera specifika livsmedel, måltidsförslag för frukost/lunch/middag, mellanmål, portionsstorlekar, näringsämnen att fokusera på, livsmedel att undvika, tips för matlagning, och hur kosten kan optimera energi och hälsa baserat på personens svar. Ge konkreta exempel och praktiska tips.]</p>",
+  "livsstil": "<h3>Livsstil</h3><p>[SKRIV MINST 150 ORD HÄR - Ge detaljerade råd om sömnrutiner, specifika tider, kvällsrutiner, morgonrutiner, träningsschema, stresshanteringstekniker, andningsövningar, meditation, naturexponering, sociala aktiviteter, och work-life balance baserat på deras behov. Inkludera steg-för-steg instruktioner.]</p>",
+  "functionalFoods": "<h3>Functional Foods</h3><p>[SKRIV MINST 150 ORD HÄR - Lista specifika tillskott med exakta doseringar, när de ska tas, vilka märken som rekommenderas, synergier mellan olika tillskott, förklaringar av hur varje tillskott fungerar i kroppen, potentiella biverkningar, och hur länge de bör användas. Ge detaljerade instruktioner.]</p>",
+  "prioriteringar": "<h3>Prioriteringar</h3><p>[SKRIV MINST 150 ORD HÄR - Skapa en detaljerad steg-för-steg plan uppdelad på veckor och månader. Förklara varför varje steg är viktigt, vad personen kan förvänta sig för resultat, hur de mäter framsteg, vanliga fallgropar att undvika, och hur de bygger hållbara vanor. Ge en konkret tidsplan.]</p>",
+  "dinKurs": "<h3>Din Kurs</h3><p>[SKRIV MINST 150 ORD HÄR - Beskriv vilken specifik kurs från functionalfoods.se som passar bäst, vad kursen innehåller i detalj, vilka moduler som är mest relevanta, vad de kommer lära sig, hur kursen kan hjälpa med deras specifika utmaningar, praktiska övningar från kursen, och långsiktiga fördelar. Inkludera pris och värde.]</p>"
 }
 
-EXTREMT VIKTIGT: Varje sektion MÅSTE vara MINST 8-10 meningar lång. Var MYCKET detaljerad och specifik. Ge konkreta exempel, doseringar, tider, och praktiska tips. Skriv på svenska.
+ABSOLUT KRAV: VARJE sektion MÅSTE vara MINST 150 ord. KORTA SVAR KOMMER ATT REFUSERAS. Var EXTREMT detaljerad och specifik. Skriv på svenska.
 `;
 
     console.log('Calling OpenAI API...');
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4",
       messages: [
         {
           role: "system",
-          content: "Du är Ulrika Davidsson från Functional Foods Sweden. Svara ENDAST med giltig JSON utan extra text eller formatering."
+          content: "Du är Ulrika Davidsson från Functional Foods Sweden. Du MÅSTE skriva LÅNGA, DETALJERADE svar på minst 150 ord per sektion. KORTA SVAR ÄR FÖRBJUDNA. Svara ENDAST med giltig JSON utan extra text."
         },
         {
           role: "user",
@@ -103,7 +103,9 @@ EXTREMT VIKTIGT: Varje sektion MÅSTE vara MINST 8-10 meningar lång. Var MYCKET
         }
       ],
       max_tokens: 7000,
-      temperature: 0.7
+      temperature: 0.3,
+      presence_penalty: 0.1,
+      frequency_penalty: 0.1
     });
 
     const response = completion.choices[0].message.content.trim();
