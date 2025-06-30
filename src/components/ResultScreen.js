@@ -9,6 +9,7 @@ const ResultScreen = ({ quizData, onRestart }) => {
   const [activeTab, setActiveTab] = useState('summary');
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState('Analyserar dina svar...');
+  const [currentTip, setCurrentTip] = useState(0);
   const [healthScores, setHealthScores] = useState({
     energi: 5,
     sömn: 5,
@@ -56,6 +57,14 @@ const ResultScreen = ({ quizData, onRestart }) => {
     return Math.round((total / 50) * 100);
   };
 
+  const tips = [
+    { icon: '💡', text: 'Visste du att tarmhälsan påverkar både humör och energinivå?' },
+    { icon: '🥗', text: 'En färgglad tallrik ger dig fler antioxidanter och näringsämnen!' },
+    { icon: '💤', text: 'Kvalitetssömn är grunden för ett starkt immunförsvar.' },
+    { icon: '🚶', text: '10 minuters promenad efter maten förbättrar blodsockerkontroll.' },
+    { icon: '💊', text: 'Rätt functional foods kan optimera din kropps naturliga processer.' }
+  ];
+
   useEffect(() => {
     // Loading messages rotation
     const messages = [
@@ -87,6 +96,11 @@ const ResultScreen = ({ quizData, onRestart }) => {
         setLoadingMessage(messages[messageIndex]);
       }
     }, 1000);
+
+    // Rotate tips every 3 seconds
+    const tipInterval = setInterval(() => {
+      setCurrentTip((prev) => (prev + 1) % tips.length);
+    }, 3000);
 
     const fetchRecommendations = async () => {
       try {
@@ -139,8 +153,11 @@ const ResultScreen = ({ quizData, onRestart }) => {
 
     fetchRecommendations();
     
-    return () => clearInterval(progressInterval);
-  }, [quizData]);
+    return () => {
+      clearInterval(progressInterval);
+      clearInterval(tipInterval);
+    };
+  }, [quizData, tips.length]);
 
   if (loading) {
     return (
@@ -157,6 +174,13 @@ const ResultScreen = ({ quizData, onRestart }) => {
                 />
               </div>
               <span className="loading-progress-text">{Math.round(loadingProgress)}%</span>
+            </div>
+            <div className="loading-tips">
+              <h3>
+                <span className="tip-icon">{tips[currentTip].icon}</span>
+                Hälsotips
+              </h3>
+              <p>{tips[currentTip].text}</p>
             </div>
           </div>
         </div>
