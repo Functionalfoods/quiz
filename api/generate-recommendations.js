@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+const { OpenAI } = require('openai');
 
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
@@ -91,7 +91,7 @@ const translateAnswers = (answers) => {
   return Object.keys(answers).map(key => answerMap[answers[key]] || answers[key]).join(', ');
 };
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -211,4 +211,4 @@ Skriv som Ulrika själv - varmt, kunnigt och inspirerande. Använd hennes erfare
       details: error.message 
     });
   }
-} 
+}; 
