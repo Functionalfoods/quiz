@@ -1,5 +1,7 @@
 /* FORCE CSS UPDATE - 2025-06-30 v2.0 */
 /* This comment forces webpack to regenerate CSS with new hash */
+/* Additional changes to ensure hash update */
+/* Webpack hash generation fix */
 
 .App {
   min-height: 100vh;
@@ -201,4 +203,10 @@
     transform: scale(1.2);
     opacity: 1;
   }
+}
+
+/* Force new CSS build hash */
+.force-css-update {
+  display: none;
+  content: "2025-06-30-v2";
 } 
