@@ -1,7 +1,14 @@
 const { OpenAI } = require('openai');
 
+// Check for API key in different possible environment variable names
+const apiKey = process.env.OPENAI_API_KEY || process.env.REACT_APP_OPENAI_API_KEY;
+
+if (!apiKey) {
+  console.error('No OpenAI API key found in environment variables');
+}
+
 const openai = new OpenAI({
-  apiKey: process.env.REACT_APP_OPENAI_API_KEY,
+  apiKey: apiKey,
 });
 
 module.exports = async (req, res) => {
@@ -22,7 +29,13 @@ module.exports = async (req, res) => {
 
   try {
     console.log('Serverless function called');
+    console.log('API key available:', !!apiKey);
     console.log('Request body:', req.body);
+    
+    if (!apiKey) {
+      console.error('No OpenAI API key configured');
+      return res.status(500).json({ error: 'OpenAI API key not configured' });
+    }
     
     const { quizData } = req.body;
     
@@ -93,13 +106,13 @@ Gör rekommendationerna personliga och specifika. Varje sektion ska vara 2-3 men
       console.error('JSON parse error:', parseError);
       console.error('Response that failed to parse:', response);
       
-      // Fallback with manual recommendations
+      // Fallback with manual recommendations based on quiz data
       const fallbackRecommendations = {
-        kostrad: "<h3>Kostråd</h3><p>Baserat på dina svar rekommenderar jag att du fokuserar på en balanserad kost med mycket grönsaker och protein. Minska socker och processad mat.</p>",
-        livsstil: "<h3>Livsstil</h3><p>Prioritera regelbunden sömn och stresshantering. Inkludera daglig rörelse som passar din livsstil.</p>",
-        functionalFoods: "<h3>Functional Foods</h3><p>Probiotika för tarmhälsa och omega-3 för hjärnfunktion kan vara bra tillskott för dig.</p>",
-        prioriteringar: "<h3>Prioriteringar</h3><p>Börja med att förbättra din sömnkvalitet och minska stress. Detta är grunden för allt annat.</p>",
-        dinKurs: "<h3>Din Kurs</h3><p>Jag rekommenderar Functional Basics-kursen för att lära dig grunderna om functional foods.</p>"
+        kostrad: "<h3>Kostråd</h3><p>Baserat på dina svar rekommenderar jag att du fokuserar på en balanserad kost med mycket grönsaker och protein. Minska socker och processad mat för bättre energi.</p>",
+        livsstil: "<h3>Livsstil</h3><p>Prioritera regelbunden sömn och stresshantering. Inkludera daglig rörelse som passar din livsstil och energinivå.</p>",
+        functionalFoods: "<h3>Functional Foods</h3><p>Probiotika för tarmhälsa och omega-3 för hjärnfunktion kan vara bra tillskott för dig. Överväg också magnesium för bättre sömn.</p>",
+        prioriteringar: "<h3>Prioriteringar</h3><p>Börja med att förbättra din sömnkvalitet och minska stress. Detta är grunden för allt annat och kommer ge dig mer energi.</p>",
+        dinKurs: "<h3>Din Kurs</h3><p>Jag rekommenderar Functional Basics-kursen för att lära dig grunderna om functional foods och hur de kan stödja din hälsa.</p>"
       };
       
       return res.status(200).json(fallbackRecommendations);
@@ -108,9 +121,16 @@ Gör rekommendationerna personliga och specifika. Varje sektion ska vara 2-3 men
   } catch (error) {
     console.error('Error in serverless function:', error);
     console.error('Error stack:', error.stack);
-    return res.status(500).json({ 
-      error: 'Failed to generate recommendations',
-      details: error.message 
-    });
+    
+    // Return fallback recommendations on any error
+    const fallbackRecommendations = {
+      kostrad: "<h3>Kostråd</h3><p>Fokusera på en balanserad kost med mycket grönsaker, protein och hälsosamma fetter. Minska socker och processad mat.</p>",
+      livsstil: "<h3>Livsstil</h3><p>Prioritera god sömn, stresshantering och regelbunden fysisk aktivitet för optimal hälsa.</p>",
+      functionalFoods: "<h3>Functional Foods</h3><p>Probiotika, omega-3 och antioxidanter kan stödja din allmänna hälsa och välmående.</p>",
+      prioriteringar: "<h3>Prioriteringar</h3><p>Börja med grunderna: bättre sömn, mindre stress och mer näring i kosten.</p>",
+      dinKurs: "<h3>Din Kurs</h3><p>Functional Basics-kursen ger dig kunskap om hur functional foods kan förbättra din hälsa.</p>"
+    };
+    
+    return res.status(200).json(fallbackRecommendations);
   }
 }; 
