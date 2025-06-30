@@ -3,8 +3,15 @@ const { OpenAI } = require('openai');
 // Check for API key in different possible environment variable names
 const apiKey = process.env.OPENAI_API_KEY || process.env.REACT_APP_OPENAI_API_KEY;
 
+console.log('Environment check:');
+console.log('- OPENAI_API_KEY exists:', !!process.env.OPENAI_API_KEY);
+console.log('- REACT_APP_OPENAI_API_KEY exists:', !!process.env.REACT_APP_OPENAI_API_KEY);
+console.log('- Final API key available:', !!apiKey);
+console.log('- API key first 8 chars:', apiKey ? `${apiKey.substring(0, 8)}...` : 'NONE');
+
 if (!apiKey) {
-  console.error('No OpenAI API key found in environment variables');
+  console.error('❌ No OpenAI API key found in environment variables');
+  console.error('Available env vars:', Object.keys(process.env).filter(key => key.includes('OPENAI')));
 }
 
 const openai = new OpenAI({
@@ -28,23 +35,31 @@ module.exports = async (req, res) => {
   }
 
   try {
-    console.log('Serverless function called');
-    console.log('API key available:', !!apiKey);
-    console.log('Request body:', req.body);
+    console.log('🚀 Serverless function called');
+    console.log('📝 API key available:', !!apiKey);
+    console.log('📦 Request body:', req.body);
+    console.log('🌍 Environment:', process.env.NODE_ENV);
+    console.log('🔧 OpenAI client initialized:', !!openai);
     
     if (!apiKey) {
-      console.error('No OpenAI API key configured');
-      return res.status(500).json({ error: 'OpenAI API key not configured' });
+      console.error('❌ No OpenAI API key configured');
+      return res.status(500).json({ 
+        error: 'OpenAI API key not configured',
+        debug: {
+          hasApiKey: !!apiKey,
+          envVars: Object.keys(process.env).filter(key => key.includes('OPENAI'))
+        }
+      });
     }
     
     const { quizData } = req.body;
     
     if (!quizData) {
-      console.error('No quiz data provided');
+      console.error('❌ No quiz data provided');
       return res.status(400).json({ error: 'Quiz data is required' });
     }
 
-    console.log('Processing quiz data:', Object.keys(quizData));
+    console.log('✅ Processing quiz data:', Object.keys(quizData));
 
     const prompt = `
 Du är Ulrika Davidsson, grundare av Functional Foods Sweden och expert på functional foods och hälsa. 
