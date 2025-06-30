@@ -226,7 +226,7 @@ const ResultScreen = ({ quizData, onRestart }) => {
               <span className="score-number">{totalScore}</span>
               <span className="score-max">/100</span>
             </div>
-            <p className="score-label">Din totala hälsopoäng</p>
+            <p className="total-score-label">Din totala hälsopoäng</p>
             <div className="score-message">
               <span className="score-emoji">{scoreMessage.emoji}</span>
               <span className="score-text">{scoreMessage.text}</span>
@@ -397,26 +397,9 @@ const ResultScreen = ({ quizData, onRestart }) => {
               </blockquote>
             </div>
 
-            <div className="result-actions">
-              <button className="btn btn-secondary" onClick={onRestart}>
+            <div className="result-actions centered">
+              <button className="btn btn-primary" onClick={onRestart}>
                 Gör om testet
-              </button>
-              <button 
-                className="btn btn-primary" 
-                onClick={() => {
-                  const shareText = `Jag fick ${totalScore}/100 poäng på Functional Foods hälsoquiz! Testa du också: https://functional-quiz-frontend.onrender.com`;
-                  if (navigator.share) {
-                    navigator.share({
-                      title: 'Functional Foods Quiz',
-                      text: shareText,
-                      url: 'https://functional-quiz-frontend.onrender.com'
-                    });
-                  } else {
-                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
-                  }
-                }}
-              >
-                Dela ditt resultat 📤
               </button>
             </div>
 

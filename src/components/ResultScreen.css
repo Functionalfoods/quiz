@@ -67,7 +67,7 @@
   font-weight: 400;
 }
 
-.score-label {
+.total-score-label {
   color: #666;
   font-size: 1rem;
   margin: 0;
@@ -288,6 +288,10 @@
   gap: 15px;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+.result-actions.centered {
+  justify-content: center;
 }
 
 .btn {
