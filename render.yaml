@@ -1,0 +1,23 @@
+services:
+  # Frontend React App
+  - type: web
+    name: functional-quiz-frontend
+    env: static
+    buildCommand: npm run build
+    staticPublishPath: ./build
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+
+  # Backend API for OpenAI
+  - type: web
+    name: functional-quiz-api
+    env: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: node api/generate-recommendations.js
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: OPENAI_API_KEY
+        sync: false  # Will be set manually in Render dashboard 
