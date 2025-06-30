@@ -30,6 +30,7 @@ export const generatePersonalizedRecommendations = async (quizData) => {
     console.log('Calling Render API for OpenAI recommendations...');
     console.log('Quiz data:', quizData);
     
+    // Use the full Render API URL for reliable cross-origin requests
     const response = await fetch('https://functional-quiz-api.onrender.com/api/generate-recommendations', {
       method: 'POST',
       headers: {
