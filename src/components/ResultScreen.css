@@ -1,4 +1,4 @@
-/* Result Screen - Modern Clean Design */
+/* Result Screen - Modern Clean Design - v3.1 MOBILE FIX */
 .result-screen {
   min-height: 100vh;
   background: #f3efe3;
@@ -144,7 +144,7 @@
 }
 
 .tab-button {
-  flex: 1;
+  flex: 0 0 auto;
   min-width: 140px;
   padding: 12px 14px;
   background: transparent;
@@ -154,13 +154,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   font-size: 0.9rem;
   color: #666;
   font-weight: 500;
   transition: all 0.3s ease;
   position: relative;
   white-space: nowrap;
+  margin: 0 4px;
 }
 
 .tab-button:hover {
@@ -694,18 +695,34 @@
     margin-bottom: 20px;
   }
   
-  /* Mobile scroll indicator dots */
+  /* Remove any scroll text */
+  .tabs-container::after {
+    display: none !important;
+    content: none !important;
+  }
+  
+  /* Mobile scroll visual hint */
+  .tabs-header {
+    position: relative;
+  }
+  
   .tabs-header::after {
-    content: '•••';
+    content: '→';
     position: absolute;
-    right: 5px;
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
     color: #93c560;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
+    font-weight: bold;
     opacity: 0.8;
     pointer-events: none;
-    animation: fadeInOut 3s ease-in-out infinite;
+    animation: slideHint 2s ease-in-out infinite;
+  }
+  
+  @keyframes slideHint {
+    0%, 100% { transform: translateY(-50%) translateX(0); }
+    50% { transform: translateY(-50%) translateX(5px); }
   }
   
   .tabs-header.scrolled-right::after {
@@ -713,12 +730,14 @@
   }
   
   .tabs-header {
-    padding: 8px 6px;
-    gap: 4px;
-    overflow-x: auto;
+    padding: 12px 8px !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scroll-behavior: smooth;
+    display: flex !important;
+    flex-wrap: nowrap !important;
   }
   
   .tabs-header::-webkit-scrollbar {
@@ -738,21 +757,27 @@
 
   
   .tab-button {
-    min-width: 95px;
-    padding: 10px 8px;
-    font-size: 0.8rem;
-    flex-shrink: 0;
-    border-radius: 10px;
-    margin: 0 2px;
+    min-width: 110px !important;
+    padding: 12px 10px !important;
+    font-size: 0.8rem !important;
+    flex-shrink: 0 !important;
+    border-radius: 10px !important;
+    margin: 0 8px !important;
+    gap: 6px !important;
+    white-space: nowrap !important;
   }
   
   .tab-icon {
-    font-size: 0.9rem;
+    font-size: 0.9rem !important;
+    flex-shrink: 0 !important;
   }
   
   .tab-text {
-    font-size: 0.75rem;
-    font-weight: 500;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
   
   .tab-content {
@@ -1051,15 +1076,17 @@
 
   
   .tabs-header {
-    padding: 6px 4px;
-    gap: 3px;
+    padding: 10px 6px !important;
+    gap: 6px !important;
   }
   
   .tab-button {
-    min-width: 80px;
-    padding: 8px 6px;
-    font-size: 0.75rem;
-    margin: 0 1px;
+    min-width: 95px !important;
+    padding: 10px 8px !important;
+    font-size: 0.75rem !important;
+    margin: 0 6px !important;
+    gap: 4px !important;
+    white-space: nowrap !important;
   }
   
   .tab-icon {
