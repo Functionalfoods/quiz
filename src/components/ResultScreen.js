@@ -7,10 +7,18 @@ const ResultScreen = ({ quizData, onRestart }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('kostrad');
-  const [showScoreExplanation, setShowScoreExplanation] = useState(false);
+  const [healthScores, setHealthScores] = useState({
+    energi: 5,
+    sömn: 5,
+    stress: 5,
+    kost: 5,
+    motion: 5
+  });
+  const [showInfoPopup, setShowInfoPopup] = useState(false);
 
-  // Calculate health scores based on quiz answers
   const calculateHealthScores = () => {
+    // This would be calculated based on quiz answers
+    // For now, using placeholder logic
     const scores = {
       energi: 5,
       sömn: 5,
@@ -19,51 +27,130 @@ const ResultScreen = ({ quizData, onRestart }) => {
       motion: 5
     };
 
-    // Energy score (question 1)
-    if (quizData[1] === 'high_energy') scores.energi = 9;
-    else if (quizData[1] === 'afternoon_dip') scores.energi = 7;
-    else if (quizData[1] === 'variable_energy') scores.energi = 5;
-    else if (quizData[1] === 'low_energy') scores.energi = 3;
+    // Map quiz answers to scores
+    if (quizData['0'] === 'high_energy') scores.energi = 8;
+    else if (quizData['0'] === 'low_energy') scores.energi = 3;
+    else if (quizData['0'] === 'afternoon_dip') scores.energi = 5;
 
-    // Sleep score (question 2)
-    if (quizData[2] === 'excellent_sleep') scores.sömn = 9;
-    else if (quizData[2] === 'good_sleep') scores.sömn = 7;
-    else if (quizData[2] === 'disrupted_sleep') scores.sömn = 4;
-    else if (quizData[2] === 'poor_sleep') scores.sömn = 2;
+    if (quizData['1'] === 'great_sleep') scores.sömn = 9;
+    else if (quizData['1'] === 'poor_sleep') scores.sömn = 3;
+    else if (quizData['1'] === 'good_sleep') scores.sömn = 7;
 
-    // Stress score (question 3 - inverse: lower stress = higher score)
-    if (quizData[3] === 'low_stress') scores.stress = 9;
-    else if (quizData[3] === 'moderate_stress') scores.stress = 6;
-    else if (quizData[3] === 'high_stress') scores.stress = 3;
-    else if (quizData[3] === 'chronic_stress') scores.stress = 2;
+    if (quizData['2'] === 'low_stress') scores.stress = 8;
+    else if (quizData['2'] === 'high_stress') scores.stress = 3;
+    else if (quizData['2'] === 'moderate_stress') scores.stress = 5;
 
-    // Exercise score (question 4)
-    if (quizData[4] === 'very_active') scores.motion = 9;
-    else if (quizData[4] === 'active') scores.motion = 7;
-    else if (quizData[4] === 'somewhat_active') scores.motion = 4;
-    else if (quizData[4] === 'sedentary') scores.motion = 2;
+    if (quizData['3'] === 'active') scores.motion = 8;
+    else if (quizData['3'] === 'sedentary') scores.motion = 3;
+    else if (quizData['3'] === 'moderately_active') scores.motion = 6;
 
-    // Diet score (question 5)
-    if (quizData[5] === 'excellent_diet') scores.kost = 9;
-    else if (quizData[5] === 'good_diet') scores.kost = 7;
-    else if (quizData[5] === 'mixed_diet') scores.kost = 5;
-    else if (quizData[5] === 'poor_diet') scores.kost = 2;
+    if (quizData['4'] === 'good_diet') scores.kost = 7;
+    else if (quizData['4'] === 'poor_diet') scores.kost = 3;
+    else if (quizData['4'] === 'moderate_diet') scores.kost = 5;
 
     return scores;
   };
 
-  const healthScores = calculateHealthScores();
+  const renderMiniRadarChart = (category, score) => {
+    const categories = ['energi', 'sömn', 'stress', 'kost', 'motion'];
+    const categoryIndex = categories.indexOf(category);
+    
+    return (
+      <div className="mini-radar-container">
+        <svg viewBox="0 0 120 120" className="mini-radar-svg">
+          {/* Background circles */}
+          {[1, 2, 3, 4, 5].map((level) => (
+            <circle
+              key={level}
+              cx="60"
+              cy="60"
+              r={level * 10}
+              fill="none"
+              stroke="#e0e0e0"
+              strokeWidth="0.5"
+              opacity="0.3"
+            />
+          ))}
+          
+          {/* Single point */}
+          <circle
+            cx={60 + (score * 5) * Math.cos((categoryIndex * 72 - 90) * (Math.PI / 180))}
+            cy={60 + (score * 5) * Math.sin((categoryIndex * 72 - 90) * (Math.PI / 180))}
+            r="4"
+            fill="#93c560"
+            stroke="#014421"
+            strokeWidth="2"
+          />
+          
+          {/* Center to point line */}
+          <line
+            x1="60"
+            y1="60"
+            x2={60 + (score * 5) * Math.cos((categoryIndex * 72 - 90) * (Math.PI / 180))}
+            y2={60 + (score * 5) * Math.sin((categoryIndex * 72 - 90) * (Math.PI / 180))}
+            stroke="#93c560"
+            strokeWidth="2"
+            opacity="0.6"
+          />
+          
+          {/* Score text */}
+          <text
+            x="60"
+            y="65"
+            textAnchor="middle"
+            className="mini-score-text"
+            fill="#014421"
+          >
+            {score}/10
+          </text>
+        </svg>
+      </div>
+    );
+  };
 
   useEffect(() => {
     const fetchRecommendations = async () => {
       try {
-        setLoading(true);
-        const result = await generatePersonalizedRecommendations(quizData);
-        setRecommendations(result);
-      } catch (err) {
-        setError('Ett fel uppstod vid genereringen av dina rekommendationer. Försök igen.');
-        console.error('Error generating recommendations:', err);
-      } finally {
+        // Determine which API URL to use based on environment
+        const apiUrl = process.env.NODE_ENV === 'production' 
+          ? 'https://functional-quiz-api.onrender.com/api/generate-recommendations'
+          : 'http://localhost:3001/api/generate-recommendations';
+
+        console.log('Fetching recommendations from:', apiUrl);
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ quizData }),
+        });
+
+        console.log('Response status:', response.status);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('API error response:', errorText);
+          throw new Error(`Failed to get recommendations: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Received recommendations:', data);
+        
+        setRecommendations(data);
+        
+        // Use scores from API if available, otherwise calculate from quiz
+        if (data.scores) {
+          setHealthScores(data.scores);
+        } else {
+          const calculatedScores = calculateHealthScores();
+          setHealthScores(calculatedScores);
+        }
+        
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching recommendations:', error);
+        setError('Kunde inte hämta rekommendationer. Försök igen senare.');
         setLoading(false);
       }
     };
@@ -78,7 +165,7 @@ const ResultScreen = ({ quizData, onRestart }) => {
           <div className="loading">
             <div className="loading-spinner"></div>
             <h2>Analyserar dina svar...</h2>
-            <p>Vi skapar personaliserade rekommendationer baserat på din livsstil</p>
+            <p>Vi skapar personliga rekommendationer baserat på din hälsoprofil</p>
             <div className="loading-dots">
               <div className="loading-dot"></div>
               <div className="loading-dot"></div>
@@ -96,7 +183,7 @@ const ResultScreen = ({ quizData, onRestart }) => {
         <div className="result-container">
           <div className="error-section">
             <div className="error-icon">⚠️</div>
-            <h2>Något gick snett</h2>
+            <h2>Något gick fel</h2>
             <p>{error}</p>
             <button className="btn btn-primary" onClick={onRestart}>
               Försök igen
@@ -108,201 +195,45 @@ const ResultScreen = ({ quizData, onRestart }) => {
   }
 
   return (
-    <div className="result-screen fade-in">
+    <div className="result-screen">
       <div className="result-container">
         <div className="result-header">
-          <div className="success-icon">🎉</div>
-          <h1>Dina Personaliserade Rekommendationer</h1>
+          <div className="success-icon">✨</div>
+          <h1>DINA PERSONALISERADE REKOMMENDATIONER</h1>
           <p className="result-subtitle">
-            Baserat på dina svar har vi skapat en skräddarsydd plan för din optimala hälsa
+            Baserat på dina svar har vi skapat en omfattande hälsoplan anpassad just för dig
           </p>
         </div>
 
-        {/* Visual Health Profile */}
-        <div className="health-profile-section">
-          <h2 className="profile-title">
-            Din Hälsoprofil
-            <button 
-              className="info-button"
-              onClick={() => setShowScoreExplanation(true)}
-              aria-label="Förklaring av poängberäkning"
-            >
+        {recommendations && recommendations.summary && (
+          <div className="health-summary">
+            <h2>Din Hälsosammanfattning</h2>
+            <div className="help-button" onClick={() => setShowInfoPopup(true)}>
               ?
-            </button>
-          </h2>
-          
-          {/* Score Explanation Popup */}
-          {showScoreExplanation && (
-            <div className="popup-overlay" onClick={() => setShowScoreExplanation(false)}>
-              <div className="popup-content" onClick={(e) => e.stopPropagation()}>
-                <button 
-                  className="popup-close"
-                  onClick={() => setShowScoreExplanation(false)}
-                >
-                  ×
-                </button>
-                <h3>Så beräknas dina poäng</h3>
-                <div className="score-explanation">
-                  <div className="explanation-item">
-                    <span className="explanation-emoji">⚡</span>
-                    <div>
-                      <h4>Energi (Fråga 1)</h4>
-                      <p>• Hög energi hela dagen: 9 poäng</p>
-                      <p>• Bra energi med eftermiddagsdipp: 7 poäng</p>
-                      <p>• Varierande energi: 5 poäng</p>
-                      <p>• Låg energi och trötthet: 3 poäng</p>
-                    </div>
-                  </div>
-                  <div className="explanation-item">
-                    <span className="explanation-emoji">😴</span>
-                    <div>
-                      <h4>Sömn (Fråga 2)</h4>
-                      <p>• Utmärkt sömn (7-9h): 9 poäng</p>
-                      <p>• Bra sömn, vaknar ibland: 7 poäng</p>
-                      <p>• Svårt att somna/vaknar ofta: 4 poäng</p>
-                      <p>• Dålig sömn: 2 poäng</p>
-                    </div>
-                  </div>
-                  <div className="explanation-item">
-                    <span className="explanation-emoji">🧘</span>
-                    <div>
-                      <h4>Stress (Fråga 3)</h4>
-                      <p>• Hanterar stress mycket bra: 9 poäng</p>
-                      <p>• Måttlig stress: 6 poäng</p>
-                      <p>• Ofta stressad: 3 poäng</p>
-                      <p>• Konstant stress: 2 poäng</p>
-                    </div>
-                  </div>
-                  <div className="explanation-item">
-                    <span className="explanation-emoji">🏃</span>
-                    <div>
-                      <h4>Motion (Fråga 4)</h4>
-                      <p>• 5+ gånger/vecka: 9 poäng</p>
-                      <p>• 3-4 gånger/vecka: 7 poäng</p>
-                      <p>• 1-2 gånger/vecka: 4 poäng</p>
-                      <p>• Sällan eller aldrig: 2 poäng</p>
-                    </div>
-                  </div>
-                  <div className="explanation-item">
-                    <span className="explanation-emoji">🥗</span>
-                    <div>
-                      <h4>Kost (Fråga 5)</h4>
-                      <p>• Mycket hälsosam kost: 9 poäng</p>
-                      <p>• Ganska hälsosam: 7 poäng</p>
-                      <p>• Blandat: 5 poäng</p>
-                      <p>• Ohälsosam kost: 2 poäng</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="popup-footer">
-                  <p>Maxpoäng: 50 (10 per kategori)</p>
-                  <p>Din totalpoäng: <strong>{Object.values(healthScores).reduce((a, b) => a + b, 0)}/50</strong></p>
-                </div>
-              </div>
             </div>
-          )}
-          
-          <div className="health-profile-container">
-            <div className="radar-chart">
-              <svg viewBox="0 0 300 300" className="radar-svg">
-                {/* Background circles */}
-                {[1, 2, 3, 4, 5].map((level) => (
-                  <circle
-                    key={level}
-                    cx="150"
-                    cy="150"
-                    r={level * 25}
-                    fill="none"
-                    stroke="#e0e0e0"
-                    strokeWidth="1"
-                  />
-                ))}
-                
-                {/* Axis lines */}
-                {Object.keys(healthScores).map((category, index) => {
-                  const angle = (index * 72 - 90) * (Math.PI / 180);
-                  const x = 150 + 125 * Math.cos(angle);
-                  const y = 150 + 125 * Math.sin(angle);
-                  return (
-                    <line
-                      key={category}
-                      x1="150"
-                      y1="150"
-                      x2={x}
-                      y2={y}
-                      stroke="#e0e0e0"
-                      strokeWidth="1"
-                    />
-                  );
-                })}
-                
-                {/* Data polygon */}
-                <polygon
-                  points={Object.values(healthScores).map((score, index) => {
-                    const angle = (index * 72 - 90) * (Math.PI / 180);
-                    const radius = (score / 10) * 125;
-                    const x = 150 + radius * Math.cos(angle);
-                    const y = 150 + radius * Math.sin(angle);
-                    return `${x},${y}`;
-                  }).join(' ')}
-                  fill="rgba(139, 195, 74, 0.3)"
-                  stroke="#8BC34A"
-                  strokeWidth="2"
-                />
-                
-                {/* Labels */}
-                {Object.entries(healthScores).map(([category, score], index) => {
-                  const angle = (index * 72 - 90) * (Math.PI / 180);
-                  const x = 150 + 145 * Math.cos(angle);
-                  const y = 150 + 145 * Math.sin(angle);
-                  const emoji = {
-                    energi: '⚡',
-                    sömn: '😴',
-                    stress: '🧘',
-                    kost: '🥗',
-                    motion: '🏃'
-                  }[category];
-                  
-                  return (
-                    <g key={category}>
-                      <text
-                        x={x}
-                        y={y}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                        className="radar-label"
-                      >
-                        <tspan x={x} dy="-10">{emoji}</tspan>
-                        <tspan x={x} dy="20">{category}</tspan>
-                      </text>
-                    </g>
-                  );
-                })}
-              </svg>
-            </div>
-            
-            <div className="health-scores">
-              <h3>Dina poäng</h3>
-              <div className="score-list">
-                {Object.entries(healthScores).map(([category, score]) => (
-                  <div key={category} className="score-item">
-                    <span className="score-category">{category.charAt(0).toUpperCase() + category.slice(1)}</span>
-                    <div className="score-bar-container">
-                      <div 
-                        className="score-bar" 
-                        style={{ width: `${score * 10}%` }}
-                      />
-                    </div>
-                    <span className="score-value">{score}/10</span>
-                  </div>
-                ))}
+            <div dangerouslySetInnerHTML={{ __html: recommendations.summary }} />
+          </div>
+        )}
+
+        {showInfoPopup && (
+          <div className="info-popup-overlay" onClick={() => setShowInfoPopup(false)}>
+            <div className="info-popup" onClick={(e) => e.stopPropagation()}>
+              <div className="popup-header">
+                <h3>Hur beräknas dina poäng?</h3>
+                <button className="close-btn" onClick={() => setShowInfoPopup(false)}>×</button>
               </div>
-              <div className="score-summary">
-                <p>Total hälsopoäng: <strong>{Object.values(healthScores).reduce((a, b) => a + b, 0)}/50</strong></p>
+              <div className="popup-content">
+                <p><strong>Energi:</strong> Baserat på din energinivå under dagen och hur ofta du känner dig trött.</p>
+                <p><strong>Sömn:</strong> Beräknas från din sömnkvalitet och hur utvilad du känner dig på morgonen.</p>
+                <p><strong>Stress:</strong> Baserat på din upplevda stressnivå - lägre stress ger högre poäng.</p>
+                <p><strong>Kost:</strong> Utvärderas från dina matvanor och hur näringsrik din kost är.</p>
+                <p><strong>Motion:</strong> Baserat på din aktivitetsnivå och regelbunden träning.</p>
+                <br />
+                <p><em>Poängen sätts av AI baserat på dina quiz-svar och används för att skapa personaliserade rekommendationer.</em></p>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {recommendations && (
           <>
@@ -350,7 +281,8 @@ const ResultScreen = ({ quizData, onRestart }) => {
                   <div className="recommendation-card diet-card active-tab-content">
                     <div className="card-header">
                       <div className="card-icon">🍃</div>
-                      <h2>Kostråd & Näring</h2>
+                      <h2>Kostråd</h2>
+                      {renderMiniRadarChart('kost', healthScores.kost)}
                     </div>
                     <div className="card-content">
                       <div dangerouslySetInnerHTML={{ __html: recommendations.kostrad }} />
@@ -363,6 +295,11 @@ const ResultScreen = ({ quizData, onRestart }) => {
                     <div className="card-header">
                       <div className="card-icon">🏃‍♀️</div>
                       <h2>Livsstilsrekommendationer</h2>
+                      <div className="mini-charts-row">
+                        {renderMiniRadarChart('energi', healthScores.energi)}
+                        {renderMiniRadarChart('sömn', healthScores.sömn)}
+                        {renderMiniRadarChart('stress', healthScores.stress)}
+                      </div>
                     </div>
                     <div className="card-content">
                       <div dangerouslySetInnerHTML={{ __html: recommendations.livsstil }} />
@@ -375,6 +312,12 @@ const ResultScreen = ({ quizData, onRestart }) => {
                     <div className="card-header">
                       <div className="card-icon">💊</div>
                       <h2>Functional Foods & Tillskott</h2>
+                      <div className="overall-score">
+                        <span className="score-label">Total hälsopoäng:</span>
+                        <span className="score-value">
+                          {Object.values(healthScores).reduce((a, b) => a + b, 0)}/50
+                        </span>
+                      </div>
                     </div>
                     <div className="card-content">
                       <div dangerouslySetInnerHTML={{ __html: recommendations.functionalFoods }} />
@@ -387,6 +330,7 @@ const ResultScreen = ({ quizData, onRestart }) => {
                     <div className="card-header">
                       <div className="card-icon">⭐</div>
                       <h2>Dina Prioriteringar</h2>
+                      {renderMiniRadarChart('motion', healthScores.motion)}
                     </div>
                     <div className="card-content">
                       <div dangerouslySetInnerHTML={{ __html: recommendations.prioriteringar }} />
@@ -398,18 +342,18 @@ const ResultScreen = ({ quizData, onRestart }) => {
                   <div className="recommendation-card course-card active-tab-content">
                     <div className="card-header">
                       <div className="card-icon">🎓</div>
-                      <h2>Rekommenderad Kurs</h2>
+                      <h2>Din Rekommenderade Kurs</h2>
                     </div>
                     <div className="card-content">
                       <div dangerouslySetInnerHTML={{ __html: recommendations.dinKurs }} />
                       <div className="course-cta">
                         <a 
-                          href="https://functionalfoods.se/kursutbud/" 
+                          href="https://functionalfoods.se" 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="btn btn-accent course-btn"
+                          className="course-btn"
                         >
-                          Se kurser på Functional Foods →
+                          Gå till kursen →
                         </a>
                       </div>
                     </div>
@@ -417,21 +361,22 @@ const ResultScreen = ({ quizData, onRestart }) => {
                 )}
               </div>
             </div>
+
+            <div className="result-actions">
+              <button className="btn btn-secondary" onClick={onRestart}>
+                Gör om testet
+              </button>
+            </div>
+
+            <div className="disclaimer">
+              <p>
+                <strong>Observera:</strong> Dessa rekommendationer är generella råd baserade på dina 
+                quiz-svar och ersätter inte professionell medicinsk rådgivning. 
+                Konsultera alltid läkare innan du gör större förändringar i din livsstil eller börjar med nya tillskott.
+              </p>
+            </div>
           </>
         )}
-
-        <div className="result-actions">
-          <button className="btn btn-secondary" onClick={onRestart}>
-            Gör quizet igen
-          </button>
-        </div>
-
-        <div className="disclaimer">
-          <p>
-            <strong>Viktigt:</strong> Dessa rekommendationer är generella råd baserade på dina svar. 
-            Konsultera alltid med en läkare eller nutritionist för personlig medicinsk rådgivning.
-          </p>
-        </div>
       </div>
     </div>
   );
