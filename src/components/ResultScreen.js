@@ -244,42 +244,37 @@ const ResultScreen = ({ quizData, onRestart }) => {
                       <h3>Dina poäng per område:</h3>
                       <div className="score-items">
                         <div className="score-item">
-                          <span className="score-emoji">⚡</span>
-                          <span className="score-name">Energi</span>
-                          <div className="score-bar">
-                            <div className="score-fill" style={{width: `${healthScores.energi * 10}%`}}></div>
+                          <div className="score-label">
+                            <span className="score-emoji">⚡</span>
+                            <span className="score-name">Energi</span>
                           </div>
                           <span className="score-value">{healthScores.energi}/10</span>
                         </div>
                         <div className="score-item">
-                          <span className="score-emoji">😴</span>
-                          <span className="score-name">Sömn</span>
-                          <div className="score-bar">
-                            <div className="score-fill" style={{width: `${healthScores.sömn * 10}%`}}></div>
+                          <div className="score-label">
+                            <span className="score-emoji">😴</span>
+                            <span className="score-name">Sömn</span>
                           </div>
                           <span className="score-value">{healthScores.sömn}/10</span>
                         </div>
                         <div className="score-item">
-                          <span className="score-emoji">🧘</span>
-                          <span className="score-name">Stress</span>
-                          <div className="score-bar">
-                            <div className="score-fill" style={{width: `${healthScores.stress * 10}%`}}></div>
+                          <div className="score-label">
+                            <span className="score-emoji">🧘</span>
+                            <span className="score-name">Stress</span>
                           </div>
                           <span className="score-value">{healthScores.stress}/10</span>
                         </div>
                         <div className="score-item">
-                          <span className="score-emoji">🥗</span>
-                          <span className="score-name">Kost</span>
-                          <div className="score-bar">
-                            <div className="score-fill" style={{width: `${healthScores.kost * 10}%`}}></div>
+                          <div className="score-label">
+                            <span className="score-emoji">🥗</span>
+                            <span className="score-name">Kost</span>
                           </div>
                           <span className="score-value">{healthScores.kost}/10</span>
                         </div>
                         <div className="score-item">
-                          <span className="score-emoji">🏃</span>
-                          <span className="score-name">Motion</span>
-                          <div className="score-bar">
-                            <div className="score-fill" style={{width: `${healthScores.motion * 10}%`}}></div>
+                          <div className="score-label">
+                            <span className="score-emoji">🏃</span>
+                            <span className="score-name">Motion</span>
                           </div>
                           <span className="score-value">{healthScores.motion}/10</span>
                         </div>
@@ -332,8 +327,8 @@ const ResultScreen = ({ quizData, onRestart }) => {
 
             <div className="motivational-quote">
               <blockquote>
-                "Hälsa är inte bara frånvaron av sjukdom, det är en tillstånd av fullständigt fysiskt, mentalt och socialt välbefinnande."
-                <cite>- World Health Organization</cite>
+                "Let food be thy medicine and medicine be thy food"
+                <cite>- Hippocrates</cite>
               </blockquote>
             </div>
 
