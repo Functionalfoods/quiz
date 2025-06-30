@@ -7,6 +7,8 @@ const ResultScreen = ({ quizData, onRestart }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('summary');
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingMessage, setLoadingMessage] = useState('Analyserar dina svar...');
   const [healthScores, setHealthScores] = useState({
     energi: 5,
     sömn: 5,
@@ -55,6 +57,37 @@ const ResultScreen = ({ quizData, onRestart }) => {
   };
 
   useEffect(() => {
+    // Loading messages rotation
+    const messages = [
+      'Analyserar dina svar...',
+      'Sätter ihop en kostrekommendation...',
+      'Tänker på hur livsstilsval kan spela in...',
+      'Analyserar hur Functional Foods kan hjälpa dig...',
+      'Förbereder rekommendationer...'
+    ];
+    
+    let messageIndex = 0;
+    let progress = 0;
+    
+    const progressInterval = setInterval(() => {
+      progress += 100 / 90; // Complete in 90 seconds
+      setLoadingProgress(Math.min(progress, 95));
+      
+      if (progress >= 20 && messageIndex < 1) {
+        messageIndex = 1;
+        setLoadingMessage(messages[messageIndex]);
+      } else if (progress >= 40 && messageIndex < 2) {
+        messageIndex = 2;
+        setLoadingMessage(messages[messageIndex]);
+      } else if (progress >= 60 && messageIndex < 3) {
+        messageIndex = 3;
+        setLoadingMessage(messages[messageIndex]);
+      } else if (progress >= 80 && messageIndex < 4) {
+        messageIndex = 4;
+        setLoadingMessage(messages[messageIndex]);
+      }
+    }, 1000);
+
     const fetchRecommendations = async () => {
       try {
         // Determine which API URL to use based on environment
@@ -93,15 +126,20 @@ const ResultScreen = ({ quizData, onRestart }) => {
           setHealthScores(calculatedScores);
         }
         
-        setLoading(false);
+        clearInterval(progressInterval);
+        setLoadingProgress(100);
+        setTimeout(() => setLoading(false), 500);
       } catch (error) {
         console.error('Error fetching recommendations:', error);
+        clearInterval(progressInterval);
         setError('Kunde inte hämta rekommendationer. Försök igen senare.');
         setLoading(false);
       }
     };
 
     fetchRecommendations();
+    
+    return () => clearInterval(progressInterval);
   }, [quizData]);
 
   if (loading) {
@@ -109,13 +147,16 @@ const ResultScreen = ({ quizData, onRestart }) => {
       <div className="result-screen">
         <div className="result-container">
           <div className="loading">
-            <div className="loading-spinner"></div>
-            <h2>Analyserar dina svar...</h2>
+            <h2>{loadingMessage}</h2>
             <p>Vi skapar personliga rekommendationer baserat på din hälsoprofil</p>
-            <div className="loading-dots">
-              <div className="loading-dot"></div>
-              <div className="loading-dot"></div>
-              <div className="loading-dot"></div>
+            <div className="loading-progress-container">
+              <div className="loading-progress-bar">
+                <div 
+                  className="loading-progress-fill" 
+                  style={{ width: `${loadingProgress}%` }}
+                />
+              </div>
+              <span className="loading-progress-text">{Math.round(loadingProgress)}%</span>
             </div>
           </div>
         </div>

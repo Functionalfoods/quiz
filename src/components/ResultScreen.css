@@ -32,8 +32,9 @@
 
 /* Total Score */
 .total-score {
-  display: inline-block;
+  display: block;
   text-align: center;
+  margin: 0 auto;
 }
 
 .score-circle {
@@ -135,15 +136,8 @@
 }
 
 .tab-button.active::after {
-  content: '';
-  position: absolute;
-  bottom: -11px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60%;
-  height: 3px;
-  background: linear-gradient(90deg, #93c560 0%, #014421 100%);
-  border-radius: 2px 2px 0 0;
+  /* Removed green line under active tabs */
+  display: none;
 }
 
 .tab-icon {
@@ -353,48 +347,83 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.loading-spinner {
-  width: 60px;
-  height: 60px;
-  border: 4px solid #f0f0f0;
-  border-top: 4px solid #93c560;
-  border-radius: 50%;
-  margin: 0 auto 30px;
-  animation: spin 1s linear infinite;
-}
-
 .loading h2 {
   color: #014421;
   font-size: 1.8rem;
   margin-bottom: 10px;
+  animation: fadeInOut 0.5s ease;
 }
 
 .loading p {
   color: #666;
   font-size: 1.1rem;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 }
 
-.loading-dots {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
+.loading-progress-container {
+  max-width: 400px;
+  margin: 0 auto;
+  position: relative;
 }
 
-.loading-dot {
-  width: 12px;
-  height: 12px;
-  background: #93c560;
-  border-radius: 50%;
-  animation: bounce 1.4s ease-in-out infinite;
+.loading-progress-bar {
+  width: 100%;
+  height: 20px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.loading-dot:nth-child(2) {
-  animation-delay: 0.2s;
+.loading-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #93c560 0%, #014421 100%);
+  border-radius: 10px;
+  transition: width 1s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.loading-dot:nth-child(3) {
-  animation-delay: 0.4s;
+.loading-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+.loading-progress-text {
+  display: block;
+  margin-top: 15px;
+  color: #014421;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fadeInOut {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 
 /* Error State */
@@ -522,7 +551,7 @@
 
 .score-emoji {
   font-size: 1.5rem;
-  animation: bounce 2s ease-in-out infinite;
+  /* Removed animation for static emojis */
 }
 
 .score-text {
@@ -687,7 +716,7 @@
   padding: 30px;
   background: linear-gradient(135deg, rgba(147, 197, 96, 0.05) 0%, rgba(1, 68, 33, 0.05) 100%);
   border-radius: 20px;
-  border-left: 4px solid #93c560;
+  /* Removed green border */
 }
 
 .motivational-quote blockquote {
