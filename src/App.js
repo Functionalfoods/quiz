@@ -3,7 +3,9 @@ import './App.css';
 import WelcomeScreen from './components/WelcomeScreen';
 import QuizModal from './components/QuizModal';
 import ResultScreen from './components/ResultScreen';
+import { quizQuestions } from './data/quizQuestions';
 
+// Force rebuild - v2
 function App() {
   const [currentStep, setCurrentStep] = useState('welcome'); // 'welcome', 'quiz', 'result'
   const [quizData, setQuizData] = useState({});
