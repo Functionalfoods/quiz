@@ -1,5 +1,9 @@
 import OpenAI from 'openai';
 
+// Debug: Check if API key is loaded
+console.log('API Key loaded:', process.env.REACT_APP_OPENAI_API_KEY ? 'Yes' : 'No');
+console.log('API Key length:', process.env.REACT_APP_OPENAI_API_KEY?.length || 0);
+
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true
@@ -187,6 +191,12 @@ Skriv som Ulrika själv - varmt, kunnigt och inspirerande. Använd hennes erfare
     
   } catch (error) {
     console.error('Error calling OpenAI API:', error);
+    console.error('Error details:', {
+      message: error.message,
+      status: error.status,
+      type: error.type,
+      apiKeyPresent: !!process.env.REACT_APP_OPENAI_API_KEY
+    });
     throw new Error('Kunde inte generera rekommendationer. Försök igen senare.');
   }
 }; 
