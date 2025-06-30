@@ -75,14 +75,11 @@ const ResultScreen = ({ quizData, onRestart }) => {
       // Remove all scroll classes
       container.classList.remove('scrolled-left', 'scrolled-right', 'scrolled-middle');
       
-      if (scrollLeft <= 5) {
-        // At the beginning
-        container.classList.add('scrolled-left');
-      } else if (scrollLeft >= maxScroll - 5) {
-        // At the end
+      if (scrollLeft >= maxScroll - 5) {
+        // At the end - hide dots
         container.classList.add('scrolled-right');
-      } else {
-        // In the middle
+      } else if (scrollLeft > 5) {
+        // In the middle - show left gradient
         container.classList.add('scrolled-middle');
       }
     };

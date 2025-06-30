@@ -101,40 +101,27 @@
 }
 
 /* Enhanced scroll indicators for mobile */
-.tabs-header::before,
-.tabs-header::after {
+.tabs-header::before {
   content: '';
   position: absolute;
   top: 0;
   bottom: 0;
+  left: 0;
   width: 20px;
   pointer-events: none;
   z-index: 1;
   transition: opacity 0.3s ease;
-}
-
-.tabs-header::before {
-  left: 0;
   background: linear-gradient(to right, #f8f8f8, transparent);
   opacity: 0;
 }
 
-.tabs-header::after {
-  right: 0;
-  background: linear-gradient(to left, #f8f8f8, transparent);
-  opacity: 1;
-}
+
 
 .tabs-header.scrolled-left::before {
   opacity: 1;
 }
 
-.tabs-header.scrolled-right::after {
-  opacity: 0;
-}
-
-.tabs-header.scrolled-middle::before,
-.tabs-header.scrolled-middle::after {
+.tabs-header.scrolled-middle::before {
   opacity: 1;
 }
 
@@ -707,27 +694,31 @@
     margin-bottom: 20px;
   }
   
-  /* Show mobile scroll hint */
-  .tabs-container::after {
-    content: '← Skrolla för fler flikar →';
-    display: block !important;
-    text-align: center;
-    font-size: 0.7rem;
-    color: #666;
-    opacity: 0.7;
-    padding: 5px 0;
-    margin-top: -2px;
-    background: #f8f8f8;
-    border-top: 1px solid #eee;
-    animation: fadeInOut 4s ease-in-out infinite;
+  /* Mobile scroll indicator dots */
+  .tabs-header::after {
+    content: '•••';
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #93c560;
+    font-size: 1.2rem;
+    opacity: 0.8;
+    pointer-events: none;
+    animation: fadeInOut 3s ease-in-out infinite;
+  }
+  
+  .tabs-header.scrolled-right::after {
+    display: none;
   }
   
   .tabs-header {
-    padding: 6px;
-    gap: 3px;
+    padding: 8px 6px;
+    gap: 4px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
+    scroll-behavior: smooth;
   }
   
   .tabs-header::-webkit-scrollbar {
@@ -744,18 +735,15 @@
     border-radius: 3px;
   }
   
-  /* Mobile scroll hint - only show on mobile */
-  .tabs-container::after {
-    content: '';
-    display: none;
-  }
+
   
   .tab-button {
-    min-width: 85px;
-    padding: 8px 6px;
-    font-size: 0.75rem;
+    min-width: 95px;
+    padding: 10px 8px;
+    font-size: 0.8rem;
     flex-shrink: 0;
-    border-radius: 8px;
+    border-radius: 10px;
+    margin: 0 2px;
   }
   
   .tab-icon {
@@ -1060,29 +1048,18 @@
     font-size: 0.9rem;
   }
   
-  .tabs-container::after {
-    content: '← Skrolla för fler flikar →';
-    display: block !important;
-    text-align: center;
-    font-size: 0.65rem;
-    color: #666;
-    opacity: 0.7;
-    padding: 4px 0;
-    margin-top: -2px;
-    background: #f8f8f8;
-    border-top: 1px solid #eee;
-    animation: fadeInOut 4s ease-in-out infinite;
-  }
+
   
   .tabs-header {
-    padding: 4px;
-    gap: 2px;
+    padding: 6px 4px;
+    gap: 3px;
   }
   
   .tab-button {
-    min-width: 75px;
-    padding: 6px 4px;
-    font-size: 0.7rem;
+    min-width: 80px;
+    padding: 8px 6px;
+    font-size: 0.75rem;
+    margin: 0 1px;
   }
   
   .tab-icon {
