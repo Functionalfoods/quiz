@@ -1,0 +1,279 @@
+.welcome-screen {
+  min-height: 100vh;
+  background: #F3EFE3;
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-screen::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, #FFE135 0%, transparent 30%);
+  opacity: 0.1;
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.welcome-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-section {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 0;
+}
+
+.hero-content {
+  max-width: 800px;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 24px;
+  color: #112A12;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.highlight {
+  color: #014421;
+  font-weight: 900;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: var(--secondary-dark);
+  opacity: 0.9;
+  margin-bottom: 32px;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  font-weight: 400;
+}
+
+.features {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+  color: var(--secondary-dark);
+}
+
+.feature-icon {
+  font-size: 1.5rem;
+}
+
+.quiz-start-btn {
+  font-size: 1.25rem;
+  padding: 20px 48px;
+  border-radius: 50px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 32px auto 20px;
+  background: #014421;
+  box-shadow: 0 8px 30px rgba(1, 68, 33, 0.4);
+  position: relative;
+  z-index: 1;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.quiz-start-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #016835, var(--primary-dark));
+  border-radius: 16px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.quiz-start-btn:hover {
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 15px 45px rgba(1, 68, 33, 0.5);
+  background: #016835;
+}
+
+.quiz-start-btn:hover::after {
+  opacity: 1;
+}
+
+.btn-arrow {
+  transition: transform 0.3s ease;
+  font-size: 1.4rem;
+  margin-left: 6px;
+}
+
+.quiz-start-btn:hover .btn-arrow {
+  transform: translateX(8px);
+}
+
+.quiz-info {
+  color: var(--secondary-dark);
+  opacity: 0.8;
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-top: 16px;
+}
+
+.benefits-section {
+  padding: 60px 0;
+  text-align: center;
+}
+
+.benefits-section h2 {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: var(--secondary-dark);
+  margin-bottom: 48px;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px;
+  margin-top: 48px;
+}
+
+.benefit-card {
+  background: white;
+  padding: 48px 32px;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  transition: all 0.3s ease;
+  border: 3px solid #93C560;
+}
+
+.benefit-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+.benefit-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.benefit-card h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 16px;
+}
+
+.benefit-card p {
+  color: var(--secondary-dark);
+  opacity: 0.8;
+  line-height: 1.6;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 50vh;
+    padding: 30px 0;
+  }
+  
+  .hero-title {
+    font-size: 2rem;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+    margin-bottom: 24px;
+    padding: 0 20px;
+  }
+  
+  .features {
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  
+  .feature {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+    font-size: 0.9rem;
+  }
+  
+  .quiz-start-btn {
+    font-size: 1.1rem;
+    padding: 16px 32px;
+    margin: 24px auto 16px;
+    min-width: 280px;
+  }
+  
+  .btn-arrow {
+    font-size: 1.3rem;
+  }
+  
+  .quiz-info {
+    font-size: 0.9rem;
+  }
+  
+  .benefits-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .benefits-section h2 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 1.6rem;
+    line-height: 1.3;
+  }
+  
+  .hero-subtitle {
+    font-size: 0.95rem;
+  }
+  
+  .quiz-start-btn {
+    font-size: 1rem;
+    padding: 14px 28px;
+    min-width: 250px;
+  }
+} 
