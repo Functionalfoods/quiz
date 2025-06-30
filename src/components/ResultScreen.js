@@ -6,7 +6,7 @@ const ResultScreen = ({ quizData, onRestart }) => {
   const [recommendations, setRecommendations] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('kostrad');
+  const [activeTab, setActiveTab] = useState('summary');
   const [healthScores, setHealthScores] = useState({
     energi: 5,
     sömn: 5,
@@ -14,11 +14,8 @@ const ResultScreen = ({ quizData, onRestart }) => {
     kost: 5,
     motion: 5
   });
-  const [showInfoPopup, setShowInfoPopup] = useState(false);
 
   const calculateHealthScores = () => {
-    // This would be calculated based on quiz answers
-    // For now, using placeholder logic
     const scores = {
       energi: 5,
       sömn: 5,
@@ -51,61 +48,10 @@ const ResultScreen = ({ quizData, onRestart }) => {
     return scores;
   };
 
-  const renderMiniRadarChart = (category, score) => {
-    const categories = ['energi', 'sömn', 'stress', 'kost', 'motion'];
-    const categoryIndex = categories.indexOf(category);
-    
-    return (
-      <div className="mini-radar-container">
-        <svg viewBox="0 0 120 120" className="mini-radar-svg">
-          {/* Background circles */}
-          {[1, 2, 3, 4, 5].map((level) => (
-            <circle
-              key={level}
-              cx="60"
-              cy="60"
-              r={level * 10}
-              fill="none"
-              stroke="#e0e0e0"
-              strokeWidth="0.5"
-              opacity="0.3"
-            />
-          ))}
-          
-          {/* Single point */}
-          <circle
-            cx={60 + (score * 5) * Math.cos((categoryIndex * 72 - 90) * (Math.PI / 180))}
-            cy={60 + (score * 5) * Math.sin((categoryIndex * 72 - 90) * (Math.PI / 180))}
-            r="4"
-            fill="#93c560"
-            stroke="#014421"
-            strokeWidth="2"
-          />
-          
-          {/* Center to point line */}
-          <line
-            x1="60"
-            y1="60"
-            x2={60 + (score * 5) * Math.cos((categoryIndex * 72 - 90) * (Math.PI / 180))}
-            y2={60 + (score * 5) * Math.sin((categoryIndex * 72 - 90) * (Math.PI / 180))}
-            stroke="#93c560"
-            strokeWidth="2"
-            opacity="0.6"
-          />
-          
-          {/* Score text */}
-          <text
-            x="60"
-            y="65"
-            textAnchor="middle"
-            className="mini-score-text"
-            fill="#014421"
-          >
-            {score}/10
-          </text>
-        </svg>
-      </div>
-    );
+  const calculateTotalScore = () => {
+    const total = Object.values(healthScores).reduce((sum, score) => sum + score, 0);
+    // Convert from 50 max to 100 max
+    return Math.round((total / 50) * 100);
   };
 
   useEffect(() => {
@@ -194,51 +140,33 @@ const ResultScreen = ({ quizData, onRestart }) => {
     );
   }
 
+  const totalScore = calculateTotalScore();
+
   return (
     <div className="result-screen">
       <div className="result-container">
         <div className="result-header">
-          <div className="success-icon">✨</div>
           <h1>DINA PERSONALISERADE REKOMMENDATIONER</h1>
-          <p className="result-subtitle">
-            Baserat på dina svar har vi skapat en omfattande hälsoplan anpassad just för dig
-          </p>
+          <div className="total-score">
+            <div className="score-circle">
+              <span className="score-number">{totalScore}</span>
+              <span className="score-max">/100</span>
+            </div>
+            <p className="score-label">Din totala hälsopoäng</p>
+          </div>
         </div>
-
-        {recommendations && recommendations.summary && (
-          <div className="health-summary">
-            <h2>Din Hälsosammanfattning</h2>
-            <div className="help-button" onClick={() => setShowInfoPopup(true)}>
-              ?
-            </div>
-            <div dangerouslySetInnerHTML={{ __html: recommendations.summary }} />
-          </div>
-        )}
-
-        {showInfoPopup && (
-          <div className="info-popup-overlay" onClick={() => setShowInfoPopup(false)}>
-            <div className="info-popup" onClick={(e) => e.stopPropagation()}>
-              <div className="popup-header">
-                <h3>Hur beräknas dina poäng?</h3>
-                <button className="close-btn" onClick={() => setShowInfoPopup(false)}>×</button>
-              </div>
-              <div className="popup-content">
-                <p><strong>Energi:</strong> Baserat på din energinivå under dagen och hur ofta du känner dig trött.</p>
-                <p><strong>Sömn:</strong> Beräknas från din sömnkvalitet och hur utvilad du känner dig på morgonen.</p>
-                <p><strong>Stress:</strong> Baserat på din upplevda stressnivå - lägre stress ger högre poäng.</p>
-                <p><strong>Kost:</strong> Utvärderas från dina matvanor och hur näringsrik din kost är.</p>
-                <p><strong>Motion:</strong> Baserat på din aktivitetsnivå och regelbunden träning.</p>
-                <br />
-                <p><em>Poängen sätts av AI baserat på dina quiz-svar och används för att skapa personaliserade rekommendationer.</em></p>
-              </div>
-            </div>
-          </div>
-        )}
 
         {recommendations && (
           <>
             <div className="tabs-container">
               <div className="tabs-header">
+                <button 
+                  className={`tab-button ${activeTab === 'summary' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('summary')}
+                >
+                  <span className="tab-icon">📊</span>
+                  <span className="tab-text">Sammanfattning</span>
+                </button>
                 <button 
                   className={`tab-button ${activeTab === 'kostrad' ? 'active' : ''}`}
                   onClick={() => setActiveTab('kostrad')}
@@ -277,85 +205,79 @@ const ResultScreen = ({ quizData, onRestart }) => {
               </div>
 
               <div className="tab-content">
+                {activeTab === 'summary' && recommendations.summary && (
+                  <div className="tab-panel">
+                    <h2>Din Hälsosammanfattning</h2>
+                    <div className="content-text" dangerouslySetInnerHTML={{ __html: recommendations.summary }} />
+                    <div className="score-breakdown">
+                      <h3>Dina poäng per område:</h3>
+                      <div className="score-items">
+                        <div className="score-item">
+                          <span className="score-emoji">⚡</span>
+                          <span className="score-name">Energi</span>
+                          <span className="score-value">{healthScores.energi}/10</span>
+                        </div>
+                        <div className="score-item">
+                          <span className="score-emoji">😴</span>
+                          <span className="score-name">Sömn</span>
+                          <span className="score-value">{healthScores.sömn}/10</span>
+                        </div>
+                        <div className="score-item">
+                          <span className="score-emoji">🧘</span>
+                          <span className="score-name">Stress</span>
+                          <span className="score-value">{healthScores.stress}/10</span>
+                        </div>
+                        <div className="score-item">
+                          <span className="score-emoji">🥗</span>
+                          <span className="score-name">Kost</span>
+                          <span className="score-value">{healthScores.kost}/10</span>
+                        </div>
+                        <div className="score-item">
+                          <span className="score-emoji">🏃</span>
+                          <span className="score-name">Motion</span>
+                          <span className="score-value">{healthScores.motion}/10</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {activeTab === 'kostrad' && (
-                  <div className="recommendation-card diet-card active-tab-content">
-                    <div className="card-header">
-                      <div className="card-icon">🍃</div>
-                      <h2>Kostråd</h2>
-                      {renderMiniRadarChart('kost', healthScores.kost)}
-                    </div>
-                    <div className="card-content">
-                      <div dangerouslySetInnerHTML={{ __html: recommendations.kostrad }} />
-                    </div>
+                  <div className="tab-panel">
+                    <div className="content-text" dangerouslySetInnerHTML={{ __html: recommendations.kostrad }} />
                   </div>
                 )}
 
                 {activeTab === 'livsstil' && (
-                  <div className="recommendation-card lifestyle-card active-tab-content">
-                    <div className="card-header">
-                      <div className="card-icon">🏃‍♀️</div>
-                      <h2>Livsstilsrekommendationer</h2>
-                      <div className="mini-charts-row">
-                        {renderMiniRadarChart('energi', healthScores.energi)}
-                        {renderMiniRadarChart('sömn', healthScores.sömn)}
-                        {renderMiniRadarChart('stress', healthScores.stress)}
-                      </div>
-                    </div>
-                    <div className="card-content">
-                      <div dangerouslySetInnerHTML={{ __html: recommendations.livsstil }} />
-                    </div>
+                  <div className="tab-panel">
+                    <div className="content-text" dangerouslySetInnerHTML={{ __html: recommendations.livsstil }} />
                   </div>
                 )}
 
                 {activeTab === 'functionalFoods' && (
-                  <div className="recommendation-card supplements-card active-tab-content">
-                    <div className="card-header">
-                      <div className="card-icon">💊</div>
-                      <h2>Functional Foods & Tillskott</h2>
-                      <div className="overall-score">
-                        <span className="score-label">Total hälsopoäng:</span>
-                        <span className="score-value">
-                          {Object.values(healthScores).reduce((a, b) => a + b, 0)}/50
-                        </span>
-                      </div>
-                    </div>
-                    <div className="card-content">
-                      <div dangerouslySetInnerHTML={{ __html: recommendations.functionalFoods }} />
-                    </div>
+                  <div className="tab-panel">
+                    <div className="content-text" dangerouslySetInnerHTML={{ __html: recommendations.functionalFoods }} />
                   </div>
                 )}
 
                 {activeTab === 'prioriteringar' && (
-                  <div className="recommendation-card priorities-card active-tab-content">
-                    <div className="card-header">
-                      <div className="card-icon">⭐</div>
-                      <h2>Dina Prioriteringar</h2>
-                      {renderMiniRadarChart('motion', healthScores.motion)}
-                    </div>
-                    <div className="card-content">
-                      <div dangerouslySetInnerHTML={{ __html: recommendations.prioriteringar }} />
-                    </div>
+                  <div className="tab-panel">
+                    <div className="content-text" dangerouslySetInnerHTML={{ __html: recommendations.prioriteringar }} />
                   </div>
                 )}
 
                 {activeTab === 'dinKurs' && (
-                  <div className="recommendation-card course-card active-tab-content">
-                    <div className="card-header">
-                      <div className="card-icon">🎓</div>
-                      <h2>Din Rekommenderade Kurs</h2>
-                    </div>
-                    <div className="card-content">
-                      <div dangerouslySetInnerHTML={{ __html: recommendations.dinKurs }} />
-                      <div className="course-cta">
-                        <a 
-                          href="https://functionalfoods.se" 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="course-btn"
-                        >
-                          Gå till kursen →
-                        </a>
-                      </div>
+                  <div className="tab-panel">
+                    <div className="content-text" dangerouslySetInnerHTML={{ __html: recommendations.dinKurs }} />
+                    <div className="course-cta">
+                      <a 
+                        href="https://functionalfoods.se/kursutbud" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="course-btn"
+                      >
+                        Se alla kurser →
+                      </a>
                     </div>
                   </div>
                 )}
