@@ -5,8 +5,20 @@ const { OpenAI } = require('openai');
 const app = express();
 const port = process.env.PORT || 3001;
 
+// Enhanced CORS configuration
+app.use(cors({
+  origin: [
+    'https://functional-quiz-frontend.onrender.com',
+    'https://functionalfoods.github.io',
+    'http://localhost:3000',
+    'http://localhost:3001'
+  ],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 
 // Check for API key
@@ -24,12 +36,23 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Functional Quiz API is running' });
 });
 
+// Test endpoint
+app.get('/api/test', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: 'API endpoint working',
+    timestamp: new Date().toISOString(),
+    hasApiKey: !!apiKey
+  });
+});
+
 // Main API endpoint
 app.post('/api/generate-recommendations', async (req, res) => {
   try {
     console.log('API endpoint called');
     console.log('API key available:', !!apiKey);
     console.log('Request body:', req.body);
+    console.log('Request headers:', req.headers);
     
     if (!apiKey) {
       console.error('No OpenAI API key configured');
@@ -137,4 +160,5 @@ Gör rekommendationerna personliga och specifika. Varje sektion ska vara 2-3 men
 app.listen(port, '0.0.0.0', () => {
   console.log(`Functional Quiz API server running on port ${port}`);
   console.log(`Health check: http://localhost:${port}/health`);
+  console.log(`Test endpoint: http://localhost:${port}/api/test`);
 }); 
