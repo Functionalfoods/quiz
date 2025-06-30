@@ -6,7 +6,7 @@ const ResultScreen = ({ quizData, onRestart }) => {
   const [recommendations, setRecommendations] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('diet');
+  const [activeTab, setActiveTab] = useState('kostrad');
 
   useEffect(() => {
     const fetchRecommendations = async () => {
@@ -77,36 +77,36 @@ const ResultScreen = ({ quizData, onRestart }) => {
             <div className="tabs-container">
               <div className="tabs-header">
                 <button 
-                  className={`tab-button ${activeTab === 'diet' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('diet')}
+                  className={`tab-button ${activeTab === 'kostrad' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('kostrad')}
                 >
                   <span className="tab-icon">🍃</span>
                   <span className="tab-text">Kostråd</span>
                 </button>
                 <button 
-                  className={`tab-button ${activeTab === 'lifestyle' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('lifestyle')}
+                  className={`tab-button ${activeTab === 'livsstil' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('livsstil')}
                 >
                   <span className="tab-icon">🏃‍♀️</span>
                   <span className="tab-text">Livsstil</span>
                 </button>
                 <button 
-                  className={`tab-button ${activeTab === 'supplements' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('supplements')}
+                  className={`tab-button ${activeTab === 'functionalFoods' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('functionalFoods')}
                 >
                   <span className="tab-icon">💊</span>
                   <span className="tab-text">Functional Foods</span>
                 </button>
                 <button 
-                  className={`tab-button ${activeTab === 'priorities' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('priorities')}
+                  className={`tab-button ${activeTab === 'prioriteringar' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('prioriteringar')}
                 >
                   <span className="tab-icon">⭐</span>
                   <span className="tab-text">Prioriteringar</span>
                 </button>
                 <button 
-                  className={`tab-button ${activeTab === 'course' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('course')}
+                  className={`tab-button ${activeTab === 'dinKurs' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('dinKurs')}
                 >
                   <span className="tab-icon">🎓</span>
                   <span className="tab-text">Din Kurs</span>
@@ -114,62 +114,62 @@ const ResultScreen = ({ quizData, onRestart }) => {
               </div>
 
               <div className="tab-content">
-                {activeTab === 'diet' && (
+                {activeTab === 'kostrad' && (
                   <div className="recommendation-card diet-card active-tab-content">
                     <div className="card-header">
                       <div className="card-icon">🍃</div>
                       <h2>Kostråd & Näring</h2>
                     </div>
                     <div className="card-content">
-                      <div dangerouslySetInnerHTML={{ __html: recommendations.diet }} />
+                      <div dangerouslySetInnerHTML={{ __html: recommendations.kostrad }} />
                     </div>
                   </div>
                 )}
 
-                {activeTab === 'lifestyle' && (
+                {activeTab === 'livsstil' && (
                   <div className="recommendation-card lifestyle-card active-tab-content">
                     <div className="card-header">
                       <div className="card-icon">🏃‍♀️</div>
                       <h2>Livsstilsrekommendationer</h2>
                     </div>
                     <div className="card-content">
-                      <div dangerouslySetInnerHTML={{ __html: recommendations.lifestyle }} />
+                      <div dangerouslySetInnerHTML={{ __html: recommendations.livsstil }} />
                     </div>
                   </div>
                 )}
 
-                {activeTab === 'supplements' && (
+                {activeTab === 'functionalFoods' && (
                   <div className="recommendation-card supplements-card active-tab-content">
                     <div className="card-header">
                       <div className="card-icon">💊</div>
                       <h2>Functional Foods & Tillskott</h2>
                     </div>
                     <div className="card-content">
-                      <div dangerouslySetInnerHTML={{ __html: recommendations.supplements }} />
+                      <div dangerouslySetInnerHTML={{ __html: recommendations.functionalFoods }} />
                     </div>
                   </div>
                 )}
 
-                {activeTab === 'priorities' && (
+                {activeTab === 'prioriteringar' && (
                   <div className="recommendation-card priorities-card active-tab-content">
                     <div className="card-header">
                       <div className="card-icon">⭐</div>
                       <h2>Dina Prioriteringar</h2>
                     </div>
                     <div className="card-content">
-                      <div dangerouslySetInnerHTML={{ __html: recommendations.priorities }} />
+                      <div dangerouslySetInnerHTML={{ __html: recommendations.prioriteringar }} />
                     </div>
                   </div>
                 )}
 
-                {activeTab === 'course' && (
+                {activeTab === 'dinKurs' && (
                   <div className="recommendation-card course-card active-tab-content">
                     <div className="card-header">
                       <div className="card-icon">🎓</div>
                       <h2>Rekommenderad Kurs</h2>
                     </div>
                     <div className="card-content">
-                      <div dangerouslySetInnerHTML={{ __html: recommendations.courseRecommendation }} />
+                      <div dangerouslySetInnerHTML={{ __html: recommendations.dinKurs }} />
                       <div className="course-cta">
                         <a 
                           href="https://functionalfoods.se/kursutbud/" 
