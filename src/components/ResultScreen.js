@@ -141,6 +141,15 @@ const ResultScreen = ({ quizData, onRestart }) => {
   }
 
   const totalScore = calculateTotalScore();
+  
+  const getScoreMessage = (score) => {
+    if (score >= 80) return { text: "Utmärkt! Du är på rätt väg!", emoji: "🌟" };
+    if (score >= 60) return { text: "Bra! Det finns potential för förbättring", emoji: "💪" };
+    if (score >= 40) return { text: "Okej start! Låt oss förbättra din hälsa", emoji: "🌱" };
+    return { text: "Tid för förändring! Vi hjälper dig", emoji: "🚀" };
+  };
+
+  const scoreMessage = getScoreMessage(totalScore);
 
   return (
     <div className="result-screen">
@@ -153,11 +162,33 @@ const ResultScreen = ({ quizData, onRestart }) => {
               <span className="score-max">/100</span>
             </div>
             <p className="score-label">Din totala hälsopoäng</p>
+            <div className="score-message">
+              <span className="score-emoji">{scoreMessage.emoji}</span>
+              <span className="score-text">{scoreMessage.text}</span>
+            </div>
           </div>
         </div>
 
         {recommendations && (
           <>
+            <div className="quick-wins">
+              <h3>🎯 Snabba vinster för din hälsa:</h3>
+              <div className="win-cards">
+                <div className="win-card">
+                  <span className="win-icon">💧</span>
+                  <span className="win-text">Drick 2L vatten dagligen</span>
+                </div>
+                <div className="win-card">
+                  <span className="win-icon">🚶</span>
+                  <span className="win-text">10 min promenad efter lunch</span>
+                </div>
+                <div className="win-card">
+                  <span className="win-icon">😴</span>
+                  <span className="win-text">Sov före 22:30</span>
+                </div>
+              </div>
+            </div>
+
             <div className="tabs-container">
               <div className="tabs-header">
                 <button 
@@ -215,26 +246,41 @@ const ResultScreen = ({ quizData, onRestart }) => {
                         <div className="score-item">
                           <span className="score-emoji">⚡</span>
                           <span className="score-name">Energi</span>
+                          <div className="score-bar">
+                            <div className="score-fill" style={{width: `${healthScores.energi * 10}%`}}></div>
+                          </div>
                           <span className="score-value">{healthScores.energi}/10</span>
                         </div>
                         <div className="score-item">
                           <span className="score-emoji">😴</span>
                           <span className="score-name">Sömn</span>
+                          <div className="score-bar">
+                            <div className="score-fill" style={{width: `${healthScores.sömn * 10}%`}}></div>
+                          </div>
                           <span className="score-value">{healthScores.sömn}/10</span>
                         </div>
                         <div className="score-item">
                           <span className="score-emoji">🧘</span>
                           <span className="score-name">Stress</span>
+                          <div className="score-bar">
+                            <div className="score-fill" style={{width: `${healthScores.stress * 10}%`}}></div>
+                          </div>
                           <span className="score-value">{healthScores.stress}/10</span>
                         </div>
                         <div className="score-item">
                           <span className="score-emoji">🥗</span>
                           <span className="score-name">Kost</span>
+                          <div className="score-bar">
+                            <div className="score-fill" style={{width: `${healthScores.kost * 10}%`}}></div>
+                          </div>
                           <span className="score-value">{healthScores.kost}/10</span>
                         </div>
                         <div className="score-item">
                           <span className="score-emoji">🏃</span>
                           <span className="score-name">Motion</span>
+                          <div className="score-bar">
+                            <div className="score-fill" style={{width: `${healthScores.motion * 10}%`}}></div>
+                          </div>
                           <span className="score-value">{healthScores.motion}/10</span>
                         </div>
                       </div>
@@ -284,9 +330,33 @@ const ResultScreen = ({ quizData, onRestart }) => {
               </div>
             </div>
 
+            <div className="motivational-quote">
+              <blockquote>
+                "Hälsa är inte bara frånvaron av sjukdom, det är en tillstånd av fullständigt fysiskt, mentalt och socialt välbefinnande."
+                <cite>- World Health Organization</cite>
+              </blockquote>
+            </div>
+
             <div className="result-actions">
               <button className="btn btn-secondary" onClick={onRestart}>
                 Gör om testet
+              </button>
+              <button 
+                className="btn btn-primary" 
+                onClick={() => {
+                  const shareText = `Jag fick ${totalScore}/100 poäng på Functional Foods hälsoquiz! Testa du också: https://functional-quiz-frontend.onrender.com`;
+                  if (navigator.share) {
+                    navigator.share({
+                      title: 'Functional Foods Quiz',
+                      text: shareText,
+                      url: 'https://functional-quiz-frontend.onrender.com'
+                    });
+                  } else {
+                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+                  }
+                }}
+              >
+                Dela ditt resultat 📤
               </button>
             </div>
 
