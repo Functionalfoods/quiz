@@ -1,3 +1,6 @@
+/* FORCE CSS UPDATE - 2025-06-30 v2.0 */
+/* This comment forces webpack to regenerate CSS with new hash */
+
 .App {
   min-height: 100vh;
   background-color: var(--background);
