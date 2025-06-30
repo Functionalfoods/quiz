@@ -49,7 +49,7 @@ module.exports = async (req, res) => {
     const prompt = `
 Du är Ulrika Davidsson, grundare av Functional Foods Sweden och expert på functional foods och hälsa. 
 
-Baserat på följande quizresultat, ge personliga rekommendationer i exakt detta JSON-format:
+Baserat på följande quizresultat, ge personliga och detaljerade rekommendationer i exakt detta JSON-format:
 
 QUIZRESULTAT:
 ${Object.entries(quizData).map(([key, value]) => `${key}: ${value}`).join('\n')}
@@ -57,14 +57,14 @@ ${Object.entries(quizData).map(([key, value]) => `${key}: ${value}`).join('\n')}
 VIKTIGT: Svara ENDAST med en giltig JSON-struktur utan extra text:
 
 {
-  "kostrad": "<h3>Kostråd</h3><p>Personliga kostråd baserat på quiz...</p>",
-  "livsstil": "<h3>Livsstil</h3><p>Livsstilsråd baserat på quiz...</p>",
-  "functionalFoods": "<h3>Functional Foods</h3><p>Rekommenderade functional foods...</p>",
-  "prioriteringar": "<h3>Prioriteringar</h3><p>Vad du bör fokusera på först...</p>",
-  "dinKurs": "<h3>Din Kurs</h3><p>Rekommenderad kurs från functionalfoods.se...</p>"
+  "kostrad": "<h3>Kostråd</h3><p>Detaljerade personliga kostråd baserat på quiz med specifika livsmedel och måltidsförslag...</p>",
+  "livsstil": "<h3>Livsstil</h3><p>Omfattande livsstilsråd med konkreta tips för sömn, motion och stresshantering...</p>",
+  "functionalFoods": "<h3>Functional Foods</h3><p>Specifika functional foods-rekommendationer med dosering och förklaringar...</p>",
+  "prioriteringar": "<h3>Prioriteringar</h3><p>Tydlig prioritering av vad personen bör fokusera på först med steg-för-steg plan...</p>",
+  "dinKurs": "<h3>Din Kurs</h3><p>Detaljerad kursrekommendation från functionalfoods.se med motivering...</p>"
 }
 
-Gör rekommendationerna personliga och specifika. Varje sektion ska vara 2-3 meningar på svenska.
+VIKTIGT: Varje sektion ska vara 4-6 meningar på svenska och vara mycket personlig baserat på quiz-svaren. Ge konkreta, actionable råd med specifika livsmedel, dosering och praktiska tips.
 `;
 
     console.log('Calling OpenAI API...');
@@ -80,7 +80,7 @@ Gör rekommendationerna personliga och specifika. Varje sektion ska vara 2-3 men
           content: prompt
         }
       ],
-      max_tokens: 1000,
+      max_tokens: 7000,
       temperature: 0.7
     });
 
@@ -108,11 +108,11 @@ Gör rekommendationerna personliga och specifika. Varje sektion ska vara 2-3 men
       
       // Fallback with manual recommendations based on quiz data
       const fallbackRecommendations = {
-        kostrad: "<h3>Kostråd</h3><p>Baserat på dina svar rekommenderar jag att du fokuserar på en balanserad kost med mycket grönsaker och protein. Minska socker och processad mat för bättre energi.</p>",
-        livsstil: "<h3>Livsstil</h3><p>Prioritera regelbunden sömn och stresshantering. Inkludera daglig rörelse som passar din livsstil och energinivå.</p>",
-        functionalFoods: "<h3>Functional Foods</h3><p>Probiotika för tarmhälsa och omega-3 för hjärnfunktion kan vara bra tillskott för dig. Överväg också magnesium för bättre sömn.</p>",
-        prioriteringar: "<h3>Prioriteringar</h3><p>Börja med att förbättra din sömnkvalitet och minska stress. Detta är grunden för allt annat och kommer ge dig mer energi.</p>",
-        dinKurs: "<h3>Din Kurs</h3><p>Jag rekommenderar Functional Basics-kursen för att lära dig grunderna om functional foods och hur de kan stödja din hälsa.</p>"
+        kostrad: "<h3>Kostråd</h3><p>Baserat på dina svar rekommenderar jag att du fokuserar på en antiinflammatorisk kost med mycket färgstarka grönsaker, fett fisk och nötter. Börja dagen med protein och fibrer för stabilare blodsockernivåer. Minska socker och processad mat, och öka intaget av omega-3 från kallpressade oljor och fet fisk. Inkludera fermenterade livsmedel som kimchi eller kefir för bättre tarmhälsa.</p>",
+        livsstil: "<h3>Livsstil</h3><p>Prioritera 7-9 timmars kvalitetssömn genom att skapa en kvällsrutin utan skärmar 1 timme före sänggåendet. Inkludera daglig rörelse - även 10-15 minuters promenad gör skillnad för både energi och humör. Praktisera stresshantering genom andningsövningar eller meditation 5-10 minuter dagligen. Exponera dig för naturligt ljus på morgonen för bättre dygnsrytm.</p>",
+        functionalFoods: "<h3>Functional Foods</h3><p>Probiotika 10-50 miljarder CFU dagligen för optimal tarmhälsa och immunförsvar. Omega-3 från alger eller fisk, 1-2g EPA/DHA per dag för hjärnfunktion och inflammation. Magnesium 200-400mg på kvällen för bättre sömn och muskelavslappning. Curcumin med svartpeppar för antiinflammatorisk effekt. Adaptogener som ashwagandha kan hjälpa med stresshantering.</p>",
+        prioriteringar: "<h3>Prioriteringar</h3><p>Vecka 1-2: Förbättra sömnhygienen och etablera en konsekvent sängtid. Vecka 3-4: Lägg till probiotika och omega-3 till din rutin. Vecka 5-6: Integrera daglig rörelse och stresshanteringsteknik. Månad 2: Optimera kosten med mer antiinflammatoriska livsmedel. Fokusera på en förändring i taget för hållbara resultat.</p>",
+        dinKurs: "<h3>Din Kurs</h3><p>Functional Basics-kursen på functionalfoods.se ger dig djupgående kunskap om hur functional foods påverkar din kropp på cellulär nivå. Du lär dig att läsa ingredienslistor, förstå bioaktiva ämnen och skapa personliga hälsoprotokoll. Kursen inkluderar praktiska recept och shopping-guider för att implementera kunskapen i vardagen.</p>"
       };
       
       return res.status(200).json(fallbackRecommendations);
@@ -124,11 +124,11 @@ Gör rekommendationerna personliga och specifika. Varje sektion ska vara 2-3 men
     
     // Return fallback recommendations on any error
     const fallbackRecommendations = {
-      kostrad: "<h3>Kostråd</h3><p>Fokusera på en balanserad kost med mycket grönsaker, protein och hälsosamma fetter. Minska socker och processad mat.</p>",
-      livsstil: "<h3>Livsstil</h3><p>Prioritera god sömn, stresshantering och regelbunden fysisk aktivitet för optimal hälsa.</p>",
-      functionalFoods: "<h3>Functional Foods</h3><p>Probiotika, omega-3 och antioxidanter kan stödja din allmänna hälsa och välmående.</p>",
-      prioriteringar: "<h3>Prioriteringar</h3><p>Börja med grunderna: bättre sömn, mindre stress och mer näring i kosten.</p>",
-      dinKurs: "<h3>Din Kurs</h3><p>Functional Basics-kursen ger dig kunskap om hur functional foods kan förbättra din hälsa.</p>"
+      kostrad: "<h3>Kostråd</h3><p>Fokusera på en antiinflammatorisk kost med mycket färgstarka grönsaker, fett fisk och nötter. Börja dagen med protein och fibrer för stabilare blodsockernivåer. Minska socker och processad mat, och öka intaget av omega-3 från kallpressade oljor och fet fisk. Inkludera fermenterade livsmedel för bättre tarmhälsa.</p>",
+      livsstil: "<h3>Livsstil</h3><p>Prioritera 7-9 timmars kvalitetssömn genom att skapa en kvällsrutin utan skärmar. Inkludera daglig rörelse - även 10-15 minuters promenad gör skillnad. Praktisera stresshantering genom andningsövningar eller meditation dagligen. Exponera dig för naturligt ljus på morgonen för bättre dygnsrytm.</p>",
+      functionalFoods: "<h3>Functional Foods</h3><p>Probiotika 10-50 miljarder CFU dagligen för optimal tarmhälsa. Omega-3 från alger eller fisk, 1-2g EPA/DHA per dag för hjärnfunktion. Magnesium 200-400mg på kvällen för bättre sömn. Curcumin med svartpeppar för antiinflammatorisk effekt. Adaptogener som ashwagandha kan hjälpa med stress.</p>",
+      prioriteringar: "<h3>Prioriteringar</h3><p>Vecka 1-2: Förbättra sömnhygienen. Vecka 3-4: Lägg till probiotika och omega-3. Vecka 5-6: Integrera daglig rörelse och stresshantering. Månad 2: Optimera kosten med antiinflammatoriska livsmedel. Fokusera på en förändring i taget för hållbara resultat.</p>",
+      dinKurs: "<h3>Din Kurs</h3><p>Functional Basics-kursen på functionalfoods.se ger dig djupgående kunskap om functional foods och deras påverkan på cellulär nivå. Du lär dig läsa ingredienslistor, förstå bioaktiva ämnen och skapa personliga hälsoprotokoll med praktiska recept och shopping-guider.</p>"
     };
     
     return res.status(200).json(fallbackRecommendations);
