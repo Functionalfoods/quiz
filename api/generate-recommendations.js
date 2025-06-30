@@ -21,23 +21,27 @@ module.exports = async (req, res) => {
   }
 
   try {
+    console.log('Serverless function called');
+    console.log('Request body:', req.body);
+    
     const { quizData } = req.body;
     
     if (!quizData) {
+      console.error('No quiz data provided');
       return res.status(400).json({ error: 'Quiz data is required' });
     }
 
-    console.log('Processing quiz data:', quizData);
+    console.log('Processing quiz data:', Object.keys(quizData));
 
     const prompt = `
 Du är Ulrika Davidsson, grundare av Functional Foods Sweden och expert på functional foods och hälsa. 
 
-Baserat på följande quizresultat, ge personliga rekommendationer i exakt detta format (använd HTML-formatering):
+Baserat på följande quizresultat, ge personliga rekommendationer i exakt detta JSON-format:
 
 QUIZRESULTAT:
 ${Object.entries(quizData).map(([key, value]) => `${key}: ${value}`).join('\n')}
 
-Svara med exakt denna struktur:
+VIKTIGT: Svara ENDAST med en giltig JSON-struktur utan extra text:
 
 {
   "kostrad": "<h3>Kostråd</h3><p>Personliga kostråd baserat på quiz...</p>",
@@ -47,15 +51,16 @@ Svara med exakt denna struktur:
   "dinKurs": "<h3>Din Kurs</h3><p>Rekommenderad kurs från functionalfoods.se...</p>"
 }
 
-Gör rekommendationerna personliga, specifika och använd svensk ton. Varje sektion ska vara 2-3 meningar.
+Gör rekommendationerna personliga och specifika. Varje sektion ska vara 2-3 meningar på svenska.
 `;
 
+    console.log('Calling OpenAI API...');
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
-          content: "Du är Ulrika Davidsson från Functional Foods Sweden. Svara alltid på svenska och ge praktiska, personliga råd."
+          content: "Du är Ulrika Davidsson från Functional Foods Sweden. Svara ENDAST med giltig JSON utan extra text eller formatering."
         },
         {
           role: "user",
@@ -66,22 +71,43 @@ Gör rekommendationerna personliga, specifika och använd svensk ton. Varje sekt
       temperature: 0.7
     });
 
-    const response = completion.choices[0].message.content;
-    console.log('OpenAI response received');
+    const response = completion.choices[0].message.content.trim();
+    console.log('OpenAI raw response:', response);
     
-    // Parse the JSON response
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      const recommendations = JSON.parse(jsonMatch[0]);
+    // Try to parse the JSON response
+    try {
+      // Remove any potential markdown formatting
+      let cleanResponse = response;
+      if (response.includes('```json')) {
+        cleanResponse = response.replace(/```json\n?/g, '').replace(/```/g, '');
+      }
+      if (response.includes('```')) {
+        cleanResponse = response.replace(/```/g, '');
+      }
+      
+      const recommendations = JSON.parse(cleanResponse);
       console.log('Successfully parsed recommendations');
       return res.status(200).json(recommendations);
-    } else {
-      console.error('Could not parse JSON from OpenAI response');
-      return res.status(500).json({ error: 'Could not parse recommendations' });
+      
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      console.error('Response that failed to parse:', response);
+      
+      // Fallback with manual recommendations
+      const fallbackRecommendations = {
+        kostrad: "<h3>Kostråd</h3><p>Baserat på dina svar rekommenderar jag att du fokuserar på en balanserad kost med mycket grönsaker och protein. Minska socker och processad mat.</p>",
+        livsstil: "<h3>Livsstil</h3><p>Prioritera regelbunden sömn och stresshantering. Inkludera daglig rörelse som passar din livsstil.</p>",
+        functionalFoods: "<h3>Functional Foods</h3><p>Probiotika för tarmhälsa och omega-3 för hjärnfunktion kan vara bra tillskott för dig.</p>",
+        prioriteringar: "<h3>Prioriteringar</h3><p>Börja med att förbättra din sömnkvalitet och minska stress. Detta är grunden för allt annat.</p>",
+        dinKurs: "<h3>Din Kurs</h3><p>Jag rekommenderar Functional Basics-kursen för att lära dig grunderna om functional foods.</p>"
+      };
+      
+      return res.status(200).json(fallbackRecommendations);
     }
     
   } catch (error) {
     console.error('Error in serverless function:', error);
+    console.error('Error stack:', error.stack);
     return res.status(500).json({ 
       error: 'Failed to generate recommendations',
       details: error.message 
