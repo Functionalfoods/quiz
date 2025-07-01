@@ -90,7 +90,7 @@
   background: #f8f8f8;
   padding: 15px;
   gap: 10px;
-  border-bottom: 3px solid #93c560;
+  border-bottom: 1px solid #eee;
   overflow-x: auto;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
@@ -706,23 +706,30 @@
     position: relative;
   }
   
+  /* Subtle scroll hint - only show when needed */
   .tabs-header::after {
-    content: '→';
+    content: '••';
     position: absolute;
-    right: 10px;
+    right: 8px;
     top: 50%;
     transform: translateY(-50%);
-    color: #93c560;
-    font-size: 1.5rem;
-    font-weight: bold;
-    opacity: 0.8;
+    color: rgba(147, 197, 96, 0.6);
+    font-size: 1rem;
+    font-weight: normal;
+    opacity: 0.7;
     pointer-events: none;
-    animation: slideHint 2s ease-in-out infinite;
+    animation: subtlePulse 3s ease-in-out infinite;
   }
   
-  @keyframes slideHint {
-    0%, 100% { transform: translateY(-50%) translateX(0); }
-    50% { transform: translateY(-50%) translateX(5px); }
+  @keyframes subtlePulse {
+    0%, 100% { 
+      opacity: 0.4; 
+      transform: translateY(-50%) scale(1);
+    }
+    50% { 
+      opacity: 0.8; 
+      transform: translateY(-50%) scale(1.1);
+    }
   }
   
   .tabs-header.scrolled-right::after {
@@ -765,8 +772,6 @@
     margin: 0 12px !important;
     gap: 8px !important;
     white-space: nowrap !important;
-    background: rgba(255,255,255,0.9) !important;
-    border: 1px solid #93c560 !important;
   }
   
   .tab-icon {
