@@ -88,9 +88,9 @@
 .tabs-header {
   display: flex;
   background: #f8f8f8;
-  padding: 10px;
-  gap: 6px;
-  border-bottom: 1px solid #eee;
+  padding: 15px;
+  gap: 10px;
+  border-bottom: 3px solid #93c560;
   overflow-x: auto;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
@@ -145,8 +145,8 @@
 
 .tab-button {
   flex: 0 0 auto;
-  min-width: 140px;
-  padding: 12px 14px;
+  min-width: 160px;
+  padding: 14px 16px;
   background: transparent;
   border: none;
   border-radius: 12px;
@@ -154,14 +154,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   font-size: 0.9rem;
   color: #666;
   font-weight: 500;
   transition: all 0.3s ease;
   position: relative;
   white-space: nowrap;
-  margin: 0 4px;
+  margin: 0 8px;
 }
 
 .tab-button:hover {
@@ -757,14 +757,16 @@
 
   
   .tab-button {
-    min-width: 110px !important;
-    padding: 12px 10px !important;
+    min-width: 130px !important;
+    padding: 15px 12px !important;
     font-size: 0.8rem !important;
     flex-shrink: 0 !important;
     border-radius: 10px !important;
-    margin: 0 8px !important;
-    gap: 6px !important;
+    margin: 0 12px !important;
+    gap: 8px !important;
     white-space: nowrap !important;
+    background: rgba(255,255,255,0.9) !important;
+    border: 1px solid #93c560 !important;
   }
   
   .tab-icon {
